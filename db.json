@@ -1,0 +1,126 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "Aurex 75 Pro Mechanical Keyboard",
+      "category": "Keyboards",
+      "subcategory": "Mechanical",
+      "brand": "AUREX",
+      "price": 5499,
+      "stock": 12,
+      "rating": 4.7,
+      "image": "/images/keyboards/mechanical-1.jpg",
+      "description": "Premium 75% mechanical keyboard with cream keycaps, an aluminum frame and a precision volume knob."
+    },
+    {
+      "id": "2",
+      "name": "Vanta TKL Mechanical Keyboard",
+      "category": "Keyboards",
+      "subcategory": "Mechanical",
+      "brand": "VANTA",
+      "price": 6999,
+      "stock": 8,
+      "rating": 4.8,
+      "image": "/images/keyboards/mechanical-2.jpg",
+      "description": "Minimal tenkeyless mechanical keyboard with dark keycaps and customizable backlighting."
+    },
+    {
+      "id": "3",
+      "name": "Solace 75 Cream Edition",
+      "category": "Keyboards",
+      "subcategory": "Mechanical",
+      "brand": "SOLACE",
+      "price": 8499,
+      "stock": 5,
+      "rating": 4.9,
+      "image": "/images/keyboards/mechanical-3.jpg",
+      "description": "Elegant 75% keyboard featuring warm orange and cream keycaps with a refined aluminum finish."
+    },
+    {
+      "id": "4",
+      "name": "Forma 75 Aluminum Keyboard",
+      "category": "Keyboards",
+      "subcategory": "Mechanical",
+      "brand": "FORMA",
+      "price": 3999,
+      "stock": 15,
+      "rating": 4.4,
+      "image": "/images/keyboards/mechanical-4.jpg",
+      "description": "Compact mechanical keyboard with a sturdy aluminum body and tactile mechanical switches."
+    },
+    {
+      "id": "5",
+      "name": "Monarch 75 Studio Keyboard",
+      "category": "Keyboards",
+      "subcategory": "Mechanical",
+      "brand": "MONARCH",
+      "price": 4799,
+      "stock": 10,
+      "rating": 4.5,
+      "image": "/images/keyboards/mechanical-5.jpg",
+      "description": "Clean black and white 75% keyboard designed for a sophisticated workspace."
+    },
+    {
+      "id": "6",
+      "name": "Retroline 65 Mechanical Keyboard",
+      "category": "Keyboards",
+      "subcategory": "Mechanical",
+      "brand": "RETROLINE",
+      "price": 5999,
+      "stock": 6,
+      "rating": 4.3,
+      "image": "/images/keyboards/mechanical-6.jpg",
+      "description": "Retro-inspired compact keyboard with warm cream and orange keycaps."
+    },
+    {
+      "id": "7",
+      "name": "Bloom 65 Mechanical Keyboard",
+      "category": "Keyboards",
+      "subcategory": "Mechanical",
+      "brand": "BLOOM",
+      "price": 7499,
+      "stock": 0,
+      "rating": 4.6,
+      "image": "/images/keyboards/mechanical-7.jpg",
+      "description": "Distinctive red and white mechanical keyboard with carefully selected accent keycaps."
+    },
+    {
+      "id": "8",
+      "name": "Crimson 65 Signature Keyboard",
+      "category": "Keyboards",
+      "subcategory": "Mechanical",
+      "brand": "CRIMSON",
+      "price": 9299,
+      "stock": 4,
+      "rating": 4.9,
+      "image": "/images/keyboards/mechanical-8.jpg",
+      "description": "Premium compact keyboard with a striking crimson and white color combination."
+    },
+    {
+      "id": "9",
+      "name": "Luma 60 Retro Mechanical Keyboard",
+      "category": "Keyboards",
+      "subcategory": "Mechanical",
+      "brand": "LUMA",
+      "price": 5199,
+      "stock": 14,
+      "rating": 4.2,
+      "image": "/images/keyboards/mechanical-9.jpg",
+      "description": "Space-saving 60% mechanical keyboard with a warm cream finish and subtle pink accents."
+    },
+    {
+      "id": "10",
+      "name": "Matrix 75 Mechanical Keyboard",
+      "category": "Keyboards",
+      "subcategory": "Mechanical",
+      "brand": "MATRIX",
+      "price": 6499,
+      "stock": 9,
+      "rating": 4.5,
+      "image": "/images/keyboards/mechanical-10.jpg",
+      "description": "Modern 75% mechanical keyboard featuring green and grey keycaps with a dedicated volume knob."
+    }
+  ],
+  "users": [],
+  "orders": []
+}
