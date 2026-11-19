@@ -3,6 +3,7 @@ import Shop from "../pages/Shop";
 import Home from "../pages/Home";
 import Cart from "../pages/Cart";
 import Wishlist from "../pages/Wishlist";
+import ProductDetails from "../pages/ProductDetails";
 import { Route, Routes } from "react-router-dom";
 
 function AppRoutes() {
@@ -14,6 +15,7 @@ function AppRoutes() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/shop/:category" element={<Shop />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
       </Route>
     </Routes>
   );

@@ -1,75 +1,86 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import {
-  Search,
-  Heart,
-  ShoppingCart,
-  UserRound,
-  MoreHorizontal,
-} from "lucide-react";
+import { Search, Heart, ShoppingCart, UserRound, Menu, X } from "lucide-react";
+
+const navLinks = [
+  { name: "Home", path: "/" },
+  { name: "Shop", path: "/shop" },
+  { name: "Categories", path: "/categories" },
+  { name: "About", path: "/about" },
+];
 
 function Navbar() {
   const [mobile, setMobile] = useState(false);
+  const [scroll, setScroll] = useState(false);
 
   const items = useSelector((state) => state.cart.items);
   const cartCount = items.reduce((total, item) => total + item.quantity, 0);
   const wishlistItems = useSelector((state) => state.wishlist.items);
   const wishlistCount = wishlistItems.length;
 
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Shop", path: "/shop" },
-    { name: "Categories", path: "/categories" },
-    { name: "About", path: "/about" },
-  ];
+  useEffect(() => {
+    const onScroll = () => setScroll(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50">
-      <nav className="border-b border-white/10 bg-black/40 backdrop-blur-xl shadow-2xl shadow-black/30">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-          <Link
-            to="/"
-            aria-label="GLIDE - Go to homepage"
-            className="flex items-center gap-3 group"
-          >
-            <div className="w-10 h-10 rounded-xl border border-violet-400/30 bg-violet-400/10 flex items-center justify-center transition-all duration-300 group-hover:bg-violet-400/20">
-              <span className="text-xl font-bold text-violet-400"></span>
+    <header className="fixed top-0 inset-x-0 z-50 flex justify-center px-4 pt-3">
+      <nav
+        className={`w-full border border-white/10 backdrop-blur-md will-change-transform transition-[max-width,padding,border-radius,background-color,box-shadow] duration-500 ease-out ${
+          scroll
+            ? "max-w-5xl rounded-full bg-black/60 py-2 shadow-lg shadow-violet-500/20"
+            : "max-w-7xl rounded-2xl bg-white/5 py-4 shadow-2xl shadow-black/40"
+        }`}
+      >
+        <div className="flex items-center justify-between px-6">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 font-bold text-white transition-transform duration-300 group-hover:rotate-12">
+              G
             </div>
-
-            <span className="text-xl font-bold tracking-[0.18em] text-white group-hover:text-violet-300 transition-colors">
+            <span className="bg-gradient-to-r from-white to-violet-300 bg-clip-text text-xl font-bold tracking-[0.18em] text-transparent">
               GLIDE
             </span>
           </Link>
-          <div className="hidden md:flex items-center gap-8">
+
+          <div className="hidden items-center gap-8 md:flex">
             {navLinks.map((link) => (
-              <Link
+              <NavLink
                 key={link.name}
                 to={link.path}
-                className="text-sm font-medium text-gray-400 hover:text-white transition-colors duration-300"
+                end={link.path === "/"}
+                className={({ isActive }) =>
+                  `relative py-1 text-sm font-medium transition-colors duration-500
+                   after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full
+                   after:origin-left after:bg-gradient-to-r after:from-violet-400 after:to-fuchsia-400
+                   after:transition-transform after:duration-500 after:ease-out hover:text-white hover:after:scale-x-100
+                   ${isActive ? "text-white after:scale-x-100" : "text-gray-400 after:scale-x-0"}`
+                }
               >
                 {link.name}
-              </Link>
+              </NavLink>
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1">
             <button
               aria-label="Search"
-              className="p-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300"
+              className="rounded-xl p-3 text-gray-400 transition-colors duration-300 hover:bg-white/10 hover:text-white"
             >
               <Search size={20} />
             </button>
 
             <Link
               to="/wishlist"
-              aria-label="wishlist"
-              className="relative p-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300"
+              aria-label="Wishlist"
+              className="relative rounded-xl p-3 text-gray-400 transition-colors duration-300 hover:bg-white/10 hover:text-white"
             >
               <Heart size={20} />
               {wishlistCount > 0 && (
-                <span className="absolute top-1 right-1 min-w-5 h-5 px-1 flex items-center justify-center rounded-full bg-violet-500 text-white text-xs font-bold">
+                <span className="absolute right-1 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-fuchsia-500 px-1 text-xs font-bold text-white">
                   {wishlistCount}
                 </span>
               )}
@@ -77,81 +88,61 @@ function Navbar() {
 
             <Link
               to="/cart"
-              aria-label="Shopping Cart"
-              className="relative p-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300"
+              aria-label="Cart"
+              className="relative rounded-xl p-3 text-gray-400 transition-colors duration-300 hover:bg-white/10 hover:text-white"
             >
               <ShoppingCart size={20} />
-
               {cartCount > 0 && (
-                <span className="absolute top-1 right-1 min-w-5 h-5 px-1 flex items-center justify-center rounded-full bg-violet-500 text-white text-xs font-bold">
+                <span className="absolute right-1 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-violet-500 px-1 text-xs font-bold text-white">
                   {cartCount}
                 </span>
               )}
             </Link>
 
-            <button
-              aria-label="Account"
-              className="p-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300"
-            >
-              <UserRound size={20} />
-            </button>
-          </div>
-
-          <div className="hidden md:flex items-center gap-3">
             <Link
               to="/login"
-              className="text-sm text-gray-300 hover:text-white transition-colors duration-300"
+              aria-label="Account"
+              className="hidden rounded-xl p-3 text-gray-400 transition-colors duration-300 hover:bg-white/10 hover:text-white md:block"
             >
-              Login
+              <UserRound size={20} />
             </Link>
 
             <Link
               to="/register"
-              className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-violet-400 transition-all duration-300"
+              className="ml-3 hidden rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-violet-500/40 md:block"
             >
               Sign Up
             </Link>
-          </div>
 
-          <button
-            onClick={() => setMobile(!mobile)}
-            aria-label="Toggle mobile menu"
-            className="md:hidden p-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300"
-          >
-            <MoreHorizontal size={22} />
-          </button>
+            <button
+              onClick={() => setMobile(!mobile)}
+              aria-label="Toggle menu"
+              className="rounded-xl p-3 text-gray-400 hover:bg-white/10 hover:text-white md:hidden"
+            >
+              {mobile ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </div>
 
         {mobile && (
-          <div className="md:hidden border-t border-white/10 px-6 py-4 space-y-2">
+          <div className="space-y-1 border-t border-white/10 px-6 pb-4 pt-3 md:hidden">
             {navLinks.map((link) => (
-              <Link
+              <NavLink
                 key={link.name}
                 to={link.path}
+                end={link.path === "/"}
                 onClick={() => setMobile(false)}
-                className="block py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-300"
+                className={({ isActive }) =>
+                  `block rounded-lg px-3 py-3 transition-colors ${
+                    isActive
+                      ? "bg-white/10 text-white"
+                      : "text-gray-400 hover:bg-white/5 hover:text-white"
+                  }`
+                }
               >
                 {link.name}
-              </Link>
+              </NavLink>
             ))}
-
-            <div className="border-t border-white/10 pt-4 flex gap-3">
-              <Link
-                to="/login"
-                onClick={() => setMobile(false)}
-                className="flex-1 text-center rounded-full border border-white/20 py-2.5 text-sm text-white transition-colors hover:border-violet-400"
-              >
-                Login
-              </Link>
-
-              <Link
-                to="/register"
-                onClick={() => setMobile(false)}
-                className="flex-1 text-center rounded-full bg-white py-2.5 text-sm font-semibold text-black transition-colors hover:bg-violet-400"
-              >
-                Sign Up
-              </Link>
-            </div>
           </div>
         )}
       </nav>
