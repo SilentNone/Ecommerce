@@ -1,11 +1,19 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ShoppingBag, Trash2, Minus, Plus } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ShoppingBag,
+  Trash2,
+  Minus,
+  Plus,
+} from "lucide-react";
 
 import {
   removeFromCart,
   increaseQuantity,
   decreaseQuantity,
+  clearCart,
 } from "../redux/slices/cartSlice";
 
 function Cart() {
@@ -21,12 +29,11 @@ function Cart() {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-[#09090B] text-white pt-28 px-6 pb-20">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+    <div className="animate-fade-up min-h-screen bg-[#09090B] px-6 pb-20 pt-28 text-white">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <p className="text-violet-400 text-sm uppercase tracking-[0.2em]">
+            <p className="text-sm uppercase tracking-[0.2em] text-violet-400">
               Your Collection
             </p>
 
@@ -41,18 +48,22 @@ function Cart() {
 
           <Link
             to="/shop"
-            className="flex items-center gap-2 text-gray-400 hover:text-violet-400 transition"
+            className="group flex items-center gap-2 text-gray-400 hover:text-violet-400 transition"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft
+              size={18}
+              className="transition-transform duration-300 group-hover:-translate-x-1"
+            />
             Continue Shopping
           </Link>
         </div>
 
         {items.length === 0 ? (
-          <div className="min-h-[400px] flex flex-col items-center justify-center text-center border border-white/10 rounded-3xl bg-zinc-900/30">
-            <ShoppingBag size={55} className="text-gray-600 mb-5" />
-
-            <h2 className="text-2xl font-semibold">Your cart is empty</h2>
+          <div className="flex min-h-[400px] flex-col items-center justify-center rounded-3xl border border-white/10 bg-zinc-900/30 text-center">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full border border-white/10 bg-white/5">
+              <ShoppingBag size={40} className="text-violet-400" />
+            </div>
+            <h2 className="mt-6 text-2xl font-semibold">Your cart is empty</h2>
 
             <p className="text-gray-400 mt-3">
               Looks like you haven't added anything yet.
@@ -60,7 +71,7 @@ function Cart() {
 
             <Link
               to="/shop"
-              className="mt-7 bg-white text-black px-7 py-3 rounded-full font-medium hover:bg-violet-400 transition"
+              className="mt-7 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 px-8 py-3 font-medium transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-violet-500/40"
             >
               Explore Products
             </Link>
@@ -68,23 +79,29 @@ function Cart() {
         ) : (
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-5">
-              {items.map((item) => (
+              {items.map((item, index) => (
                 <div
                   key={item.id}
-                  className="flex flex-col sm:flex-row gap-5 p-5 rounded-2xl border border-white/10 bg-zinc-900/50 hover:border-violet-500/30 transition"
+                  style={{ animationDelay: `${index * 80}ms` }}
+                  className="animate-fade-up flex flex-col gap-5 rounded-2xl border border-white/10 bg-zinc-900/50 p-5 transition-all duration-300 hover:border-violet-500/40 hover:shadow-lg hover:shadow-violet-500/10 sm:flex-row"
                 >
+                  <Link to={`/product/${item.id}`} className="shrink-0"></Link>
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-full sm:w-36 h-36 object-cover rounded-xl"
+                    className="w-full sm:w-36 h-36 object-cover rounded-xl bg-[#111113]"
                   />
+                  <Link />
 
                   <div className="flex-1">
                     <p className="text-xs text-violet-400 uppercase tracking-wider">
                       {item.brand}
                     </p>
-
-                    <h2 className="text-lg font-semibold mt-2">{item.name}</h2>
+                    <Link to={`/product/${item.id}`}>
+                      <h2 className="mt-2 text-lg font-semibold transition-colors hover:text-violet-300">
+                        {item.name}
+                      </h2>
+                    </Link>
 
                     <p className="text-gray-400 mt-2">
                       ₹{item.price.toLocaleString("en-IN")}
@@ -110,6 +127,11 @@ function Cart() {
                       >
                         <Plus size={15} />
                       </button>
+                      {item.quantity >= item.stock && (
+                        <span className="text-xs text-amber-400">
+                          Max stock reached
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -128,9 +150,15 @@ function Cart() {
                   </div>
                 </div>
               ))}
+              <button
+                onClick={() => dispatch(clearCart())}
+                className="text-sm text-gray-500 transition hover:text-red-400"
+              >
+                Clear cart
+              </button>
             </div>
 
-            <div className="h-fit p-6 rounded-2xl border border-white/10 bg-zinc-900/70">
+            <div className="h-fit p-6 rounded-2xl border border-white/10 bg-zinc-900/70 backdrop-blur lg:sticky lg:top-28">
               <h2 className="text-xl font-semibold mb-7">Order Summary</h2>
 
               <div className="flex justify-between text-gray-400 mb-4">
@@ -148,19 +176,25 @@ function Cart() {
                 <span className="text-green-400">Free</span>
               </div>
 
-              <div className="border-t border-white/10 pt-5 flex justify-between items-center">
+              <div className="flex items-center justify-between border-t border-white/10 pt-5">
                 <span className="font-medium">Total</span>
-
                 <span className="text-2xl font-bold text-violet-400">
                   ₹{total.toLocaleString("en-IN")}
                 </span>
               </div>
 
-              <button className="w-full mt-7 bg-white text-black py-4 rounded-xl font-semibold hover:bg-violet-400 transition">
+              <Link
+                to="/checkout"
+                className="group mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 py-4 font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/40"
+              >
                 Proceed to Checkout
-              </button>
+                <ArrowRight
+                  size={18}
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </Link>
 
-              <p className="text-xs text-gray-500 text-center mt-4">
+              <p className="mt-4 text-center text-xs text-gray-500">
                 Shipping and final charges are subject to checkout.
               </p>
             </div>
