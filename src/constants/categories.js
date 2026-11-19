@@ -10,8 +10,8 @@ export const categories = [
     image: keyboardsImg,
   },
   {
-    name: "Mouse",
-    slug: "mouse",
+    name: "Mice",
+    slug: "mice",
     tagline: "Precision in hand",
     image: mouseImg,
   },
