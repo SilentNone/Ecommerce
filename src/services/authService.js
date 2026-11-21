@@ -1,6 +1,4 @@
-
 import api from "./api";
-
 
 export const registerUser = async (userData) => {
   const email = userData.email.trim().toLowerCase();
@@ -27,7 +25,6 @@ export const registerUser = async (userData) => {
   return safeUser;
 };
 
-
 export const loginUser = async (email, password) => {
   const response = await api.get("/users", {
     params: {
@@ -43,5 +40,19 @@ export const loginUser = async (email, password) => {
 
   const { password: userPassword, ...safeUser } = user;
 
+  return safeUser;
+};
+export const updateUser = async (id, changes) => {
+  if (changes.email) {
+    changes.email = changes.email.trim().toLowerCase();
+
+    const res = await api.get("/users", { params: { email: changes.email } });
+    if (res.data.some((u) => u.id !== id)) {
+      throw new Error("Email already in use");
+    }
+  }
+
+  const response = await api.patch(`/users/${id}`, changes);
+  const { password, ...safeUser } = response.data;
   return safeUser;
 };

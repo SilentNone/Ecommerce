@@ -12,11 +12,10 @@ function CheckOut() {
   const items = useSelector((state) => state.cart.items);
 
   const [address, setAddress] = useState("");
-  const [placing, setPlacing] = useState("");
+  const [placing, setPlacing] = useState(false);
 
   const total = items.reduce(
-    sum,
-    (item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.price * item.quantity,
     0,
   );
   if (items.length === 0) {
@@ -37,7 +36,7 @@ function CheckOut() {
           items,
           total,
           address,
-          date: new Date().toISOString,
+          date: new Date().toISOString(),
           status: "placed",
         }),
       ).unwrap();

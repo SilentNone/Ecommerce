@@ -12,7 +12,7 @@ const store = configureStore({
     cart: cartReducer,
     wishlist: wishlistReducer,
     auth: authReducer,
-    order: orderReducer,
+    orders: orderReducer,
   },
 });
 

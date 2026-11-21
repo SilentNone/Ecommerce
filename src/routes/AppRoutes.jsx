@@ -10,7 +10,7 @@ import ProductDetails from "../pages/ProductDetails";
 import Register from "../pages/Register";
 import Login from "../pages/Login";
 import Checkout from "../pages/Checkout";
-//import Orders from "../pages/Orders";
+import Orders from "../pages/Orders";
 
 function AppRoutes() {
   return (
@@ -29,8 +29,8 @@ function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route path="/cart" element={<Cart />} />
           <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/checkout" element={<Checkout />} /> 
-          {/* <Route path="/orders" element={<Orders />} /> */}
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/orders" element={<Orders />} />
         </Route>
       </Route>
     </Routes>

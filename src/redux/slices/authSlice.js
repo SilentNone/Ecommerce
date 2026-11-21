@@ -1,5 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { registerUser, loginUser } from "../../services/authService";
+import {
+  registerUser,
+  loginUser,
+  updateUser,
+} from "../../services/authService";
 
 const loadUser = () => {
   try {
@@ -27,6 +31,16 @@ export const login = createAsyncThunk(
       return await loginUser(email, password);
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  },
+);
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async ({ id, changes }, { rejectWithValue }) => {
+    try {
+      return await updateUser(id, changes);
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   },
 );
@@ -80,6 +94,10 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload));
       });
   },
 });
