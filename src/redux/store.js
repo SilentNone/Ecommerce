@@ -3,6 +3,7 @@ import productReducer from "./slices/productSlice";
 import cartReducer from "./slices/cartSlice";
 import wishlistReducer from "./slices/wishlistSlice";
 import authReducer from "./slices/authSlice";
+import orderReducer from "./slices/orderSlice";
 import { saveList } from "../utils/storage";
 
 const store = configureStore({
@@ -11,6 +12,7 @@ const store = configureStore({
     cart: cartReducer,
     wishlist: wishlistReducer,
     auth: authReducer,
+    order: orderReducer,
   },
 });
 
