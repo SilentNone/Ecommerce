@@ -16,9 +16,9 @@ export const categories = [
     image: mouseImg,
   },
   {
-    name: "Desk Setups",
-    slug: "desk-setups",
-    tagline: "Build your space",
+    name: "Accessories",
+    slug: "accessories",
+    tagline: "Complete your setup",
     image: deskImg,
   },
 ];

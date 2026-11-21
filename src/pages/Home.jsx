@@ -11,46 +11,52 @@ import { categories } from "../constants/categories";
 
 function Home() {
   const dispatch = useDispatch();
-  const { products, loading } = useSelector((state) => state.products);
+
+  const { products, loading, error } = useSelector((state) => state.products);
 
   useEffect(() => {
-    dispatch(getProducts());
-  }, [dispatch]);
+    if (products.length === 0 && !loading) {
+      dispatch(getProducts());
+    }
+  }, [dispatch, products.length, loading]);
 
-  const featured = products.slice(0, 4);
+  const featured = products
+    .filter((product) => product.price > 0 && product.inStock)
+    .slice(0, 4);
 
   return (
     <div className="min-h-screen bg-[#09090B] text-white">
-    
-      <section className="min-h-screen relative flex items-center overflow-hidden">
+      <section className="relative flex min-h-screen items-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
+
         <div className="absolute inset-0 bg-black/60" />
+
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#09090B] to-transparent" />
 
-        <div className="relative z-10 max-w-7xl mx-auto w-full px-6 py-24">
-          <p className="font-mono uppercase tracking-[0.25em] text-xs md:text-sm text-violet-400 animate-pulse">
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-6 py-24">
+          <p className="animate-pulse font-mono text-xs uppercase tracking-[0.25em] text-violet-400 md:text-sm">
             KEYBOARDS · MOUSE · WORKSPACE ESSENTIALS
           </p>
 
-          <h1 className="text-5xl md:text-7xl font-bold leading-[1.05] mt-8 max-w-3xl">
+          <h1 className="mt-8 max-w-3xl text-5xl font-bold leading-[1.05] md:text-7xl">
             Elevate Your Everyday{" "}
-            <span className="italic font-medium text-violet-400">Setup.</span>
+            <span className="font-medium italic text-violet-400">Setup.</span>
           </h1>
 
-          <p className="text-gray-400 text-lg mt-8 max-w-xl leading-relaxed">
+          <p className="mt-8 max-w-xl text-lg leading-relaxed text-gray-400">
             Technology meets personal expression. Discover accessories designed
             around your workspace.
           </p>
 
-          <div className="flex flex-wrap gap-4 mt-6">
+          <div className="mt-6 flex flex-wrap gap-4">
             <Link
               to="/shop"
-              className="group flex items-center gap-2 bg-white text-black px-8 py-4 rounded-full font-medium transition-all duration-300 hover:bg-violet-400 hover:text-black"
+              className="group flex items-center gap-2 rounded-full bg-white px-8 py-4 font-medium text-black transition-all duration-300 hover:bg-violet-400"
             >
-              Explore Collection{" "}
+              Explore Collection
               <ArrowRight
                 size={18}
                 className="transition-transform duration-300 group-hover:translate-x-1"
@@ -58,8 +64,8 @@ function Home() {
             </Link>
 
             <Link
-              to="/about"
-              className="border border-white/20 px-8 py-4 rounded-full font-medium transition-all duration-300 hover:border-violet-400"
+              to="/shop/accessories"
+              className="rounded-full border border-white/20 px-8 py-4 font-medium transition-all duration-300 hover:border-violet-400 hover:text-violet-300"
             >
               Build Your Setup
             </Link>
@@ -67,30 +73,31 @@ function Home() {
         </div>
       </section>
 
-    
-      <section className="max-w-7xl mx-auto px-6 py-24">
-        <p className="font-mono uppercase tracking-[0.25em] text-sm text-violet-400">
+      {/* Categories Section */}
+      <section className="mx-auto max-w-7xl px-6 py-24">
+        <p className="font-mono text-sm uppercase tracking-[0.25em] text-violet-400">
           Collections
         </p>
-        <h2 className="text-3xl md:text-5xl font-bold mt-4">
+
+        <h2 className="mt-4 text-3xl font-bold md:text-5xl">
           Shop by category
         </h2>
 
-        <div className="grid gap-6 mt-12 md:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
           {categories.map((category) => (
             <CategoryCard key={category.slug} category={category} />
           ))}
         </div>
       </section>
 
-    
-      <section className="max-w-7xl mx-auto px-6 pb-24">
+      <section className="mx-auto max-w-7xl px-6 pb-24">
         <div className="flex items-end justify-between">
           <div>
-            <p className="font-mono uppercase tracking-[0.25em] text-sm text-violet-400">
+            <p className="font-mono text-sm uppercase tracking-[0.25em] text-violet-400">
               Featured
             </p>
-            <h2 className="text-3xl md:text-5xl font-bold mt-4">
+
+            <h2 className="mt-4 text-3xl font-bold md:text-5xl">
               Trending right now
             </h2>
           </div>
@@ -109,6 +116,10 @@ function Home() {
 
         {loading ? (
           <p className="mt-12 text-gray-400">Loading products...</p>
+        ) : error ? (
+          <p className="mt-12 text-gray-400">
+            Unable to load products. Please try again.
+          </p>
         ) : featured.length === 0 ? (
           <p className="mt-12 text-gray-400">No products available yet.</p>
         ) : (

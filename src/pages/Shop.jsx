@@ -17,15 +17,18 @@ function Shop() {
   const [sort, setSort] = useState("default");
   const [category, setCategory] = useState(urlCategory || "all");
   const [page, setPage] = useState(1);
+
   const { products, loading, error } = useSelector((state) => state.products);
 
   useEffect(() => {
-    dispatch(getProducts());
-  }, [dispatch]);
+    if (products.length === 0) {
+      dispatch(getProducts());
+    }
+  }, [dispatch, products.length]);
 
   useEffect(() => {
     setCategory(urlCategory || "all");
-  }, [dispatch]);
+  }, [urlCategory]);
 
   useEffect(() => {
     setPage(1);
@@ -44,10 +47,14 @@ function Shop() {
     })
     .sort((a, b) => {
       if (sort === "low-to-high") {
+        if (!a.price) return 1;
+        if (!b.price) return -1;
         return a.price - b.price;
       }
 
       if (sort === "high-to-low") {
+        if (!a.price) return 1;
+        if (!b.price) return -1;
         return b.price - a.price;
       }
 
@@ -57,36 +64,43 @@ function Shop() {
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
   const start = (page - 1) * PER_PAGE;
   const visibleProducts = filtered.slice(start, start + PER_PAGE);
+
+  const categoryName =
+    category === "all"
+      ? "All Products"
+      : categories.find((item) => item.slug === category)?.name ||
+        category.replaceAll("-", " ");
+
   return (
     <div className="mx-auto min-h-screen max-w-7xl px-6 pb-24 pt-28 text-white">
-      
-      <p className="font-mono text-sm uppercase tracking-[0.25em] text-violet-400">
+      <p className="font-mono text-sm uppercase tracking-widest text-gray-400">
         Shop
       </p>
+
       <h1 className="mt-3 text-3xl font-bold capitalize md:text-5xl">
-        {category === "all" ? "All Products" : category}
+        {categoryName}
       </h1>
 
-    
       <div className="mt-8 flex flex-col gap-4 md:flex-row">
         <div className="relative flex-1">
           <Search
             size={18}
             className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
           />
+
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search products..."
-            className="w-full rounded-full border border-white/10 bg-white/5 py-3 pl-12 pr-5 outline-none backdrop-blur transition focus:border-violet-400"
+            className="w-full rounded-full border border-white/10 bg-white/5 py-3 pl-12 pr-5 outline-none transition focus:border-white/50"
           />
         </div>
 
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value)}
-          className="rounded-full border border-white/10 bg-zinc-900 px-5 py-3 outline-none focus:border-violet-400"
+          className="rounded-full border border-white/10 bg-zinc-900 px-5 py-3 outline-none focus:border-white/50"
         >
           <option value="default">Sort: Default</option>
           <option value="low-to-high">Price: Low to High</option>
@@ -94,14 +108,13 @@ function Shop() {
         </select>
       </div>
 
-     
       <div className="mt-6 flex flex-wrap gap-3">
         <button
           onClick={() => setCategory("all")}
-          className={`rounded-full border px-5 py-2 text-sm transition-all duration-300 ${
+          className={`rounded-full border px-5 py-2 text-sm transition ${
             category === "all"
-              ? "border-transparent bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white"
-              : "border-white/10 text-gray-400 hover:border-violet-400 hover:text-white"
+              ? "border-white bg-white text-black"
+              : "border-white/10 text-gray-400 hover:border-white hover:text-white"
           }`}
         >
           All
@@ -111,10 +124,10 @@ function Shop() {
           <button
             key={item.slug}
             onClick={() => setCategory(item.slug)}
-            className={`rounded-full border px-5 py-2 text-sm transition-all duration-300 ${
+            className={`rounded-full border px-5 py-2 text-sm transition ${
               category === item.slug
-                ? "border-transparent bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white"
-                : "border-white/10 text-gray-400 hover:border-violet-400 hover:text-white"
+                ? "border-white bg-white text-black"
+                : "border-white/10 text-gray-400 hover:border-white hover:text-white"
             }`}
           >
             {item.name}
@@ -122,14 +135,16 @@ function Shop() {
         ))}
       </div>
 
-     
-      {loading && <p className="mt-12 text-gray-400">Loading products...</p>}
-      {error && <p className="mt-12 text-red-400">{error}</p>}
-      {!loading && !error && filtered.length === 0 && (
+      {(loading || (products.length === 0 && !error)) && (
+        <p className="mt-12 text-gray-400">Loading products...</p>
+      )}
+
+      {error && <p className="mt-12 text-gray-400">{error}</p>}
+
+      {!loading && !error && products.length > 0 && filtered.length === 0 && (
         <p className="mt-12 text-gray-400">No products found.</p>
       )}
 
-    
       {!loading && !error && filtered.length > 0 && (
         <>
           <p className="mt-8 text-sm text-gray-400">
@@ -143,12 +158,13 @@ function Shop() {
           </div>
         </>
       )}
-   {totalPages > 1 && (
+
+      {totalPages > 1 && (
         <div className="mt-14 flex items-center justify-center gap-2">
           <button
             onClick={() => setPage(page - 1)}
             disabled={page === 1}
-            className="rounded-full border border-white/10 px-5 py-2 text-sm transition hover:border-violet-400 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-full border border-white/10 px-5 py-2 text-sm transition hover:border-white disabled:cursor-not-allowed disabled:opacity-40"
           >
             Prev
           </button>
@@ -157,10 +173,10 @@ function Shop() {
             <button
               key={num}
               onClick={() => setPage(num)}
-              className={`h-10 w-10 rounded-full text-sm transition-all duration-300 ${
+              className={`h-10 w-10 rounded-full text-sm transition ${
                 page === num
-                  ? "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white"
-                  : "border border-white/10 text-gray-400 hover:border-violet-400 hover:text-white"
+                  ? "bg-white text-black"
+                  : "border border-white/10 text-gray-400 hover:border-white hover:text-white"
               }`}
             >
               {num}
@@ -170,7 +186,7 @@ function Shop() {
           <button
             onClick={() => setPage(page + 1)}
             disabled={page === totalPages}
-            className="rounded-full border border-white/10 px-5 py-2 text-sm transition hover:border-violet-400 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-full border border-white/10 px-5 py-2 text-sm transition hover:border-white disabled:cursor-not-allowed disabled:opacity-40"
           >
             Next
           </button>

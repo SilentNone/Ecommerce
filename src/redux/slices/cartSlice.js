@@ -1,35 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-const loadCart = () => {
-  try {
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
-  } catch {
-    return [];
-  }
-};
+import { getSavedUser, loadList } from "../../utils/storage";
+import { login, register, logout } from "./authSlice";
 
 const cartSlice = createSlice({
   name: "cart",
 
   initialState: {
-    items: loadCart(),
+    items: loadList("cart", getSavedUser()?.id),
   },
 
   reducers: {
     addToCart: (state, action) => {
-      const product = action.payload;
+      const payload = action.payload;
+      const product = payload.product || payload;
+      const quantity = payload.quantity || 1;
+
+      if (!product.inStock || !product.price) return;
 
       const existingItem = state.items.find((item) => item.id === product.id);
 
       if (existingItem) {
-        if (existingItem.quantity < product.stock) {
-          existingItem.quantity += 1;
-        }
-      } else if (product.stock > 0) {
+        existingItem.quantity += quantity;
+      } else {
         state.items.push({
           ...product,
-          quantity: 1,
+          quantity,
         });
       }
     },
@@ -41,7 +36,7 @@ const cartSlice = createSlice({
     increaseQuantity: (state, action) => {
       const item = state.items.find((item) => item.id === action.payload);
 
-      if (item && item.quantity < item.stock) {
+      if (item) {
         item.quantity += 1;
       }
     },
@@ -58,8 +53,19 @@ const cartSlice = createSlice({
       state.items = [];
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(login.fulfilled, (state, action) => {
+        state.items = loadList("cart", action.payload.id);
+      })
+      .addCase(register.fulfilled, (state) => {
+        state.items = [];
+      })
+      .addCase(logout, (state) => {
+        state.items = [];
+      });
+  },
 });
-
 export const {
   addToCart,
   removeFromCart,

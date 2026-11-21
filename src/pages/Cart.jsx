@@ -22,11 +22,13 @@ function Cart() {
   const items = useSelector((state) => state.cart.items);
 
   const total = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + (item.price || 0) * item.quantity,
     0,
   );
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  const canCheckout = items.every((item) => item.inStock && item.price > 0);
 
   return (
     <div className="animate-fade-up min-h-screen bg-[#09090B] px-6 pb-20 pt-28 text-white">
@@ -37,18 +39,18 @@ function Cart() {
               Your Collection
             </p>
 
-            <h1 className="text-4xl md:text-5xl font-bold mt-3">
+            <h1 className="mt-3 text-4xl font-bold md:text-5xl">
               Shopping Cart
             </h1>
 
-            <p className="text-gray-400 mt-3">
+            <p className="mt-3 text-gray-400">
               {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
             </p>
           </div>
 
           <Link
             to="/shop"
-            className="group flex items-center gap-2 text-gray-400 hover:text-violet-400 transition"
+            className="group flex items-center gap-2 text-gray-400 transition hover:text-violet-400"
           >
             <ArrowLeft
               size={18}
@@ -63,9 +65,10 @@ function Cart() {
             <div className="flex h-24 w-24 items-center justify-center rounded-full border border-white/10 bg-white/5">
               <ShoppingBag size={40} className="text-violet-400" />
             </div>
+
             <h2 className="mt-6 text-2xl font-semibold">Your cart is empty</h2>
 
-            <p className="text-gray-400 mt-3">
+            <p className="mt-3 text-gray-400">
               Looks like you haven't added anything yet.
             </p>
 
@@ -77,79 +80,93 @@ function Cart() {
             </Link>
           </div>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-5">
-              {items.map((item, index) => (
-                <div
-                  key={item.id}
-                  style={{ animationDelay: `${index * 80}ms` }}
-                  className="animate-fade-up flex flex-col gap-5 rounded-2xl border border-white/10 bg-zinc-900/50 p-5 transition-all duration-300 hover:border-violet-500/40 hover:shadow-lg hover:shadow-violet-500/10 sm:flex-row"
-                >
-                  <Link to={`/product/${item.id}`} className="shrink-0"></Link>
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full sm:w-36 h-36 object-cover rounded-xl bg-[#111113]"
-                  />
-                  <Link />
+          <div className="grid gap-8 lg:grid-cols-3">
+            <div className="space-y-5 lg:col-span-2">
+              {items.map((item, index) => {
+                const maxStockReached =
+                  typeof item.stockQuantity === "number" &&
+                  item.quantity >= item.stockQuantity;
 
-                  <div className="flex-1">
-                    <p className="text-xs text-violet-400 uppercase tracking-wider">
-                      {item.brand}
-                    </p>
-                    <Link to={`/product/${item.id}`}>
-                      <h2 className="mt-2 text-lg font-semibold transition-colors hover:text-violet-300">
-                        {item.name}
-                      </h2>
+                return (
+                  <div
+                    key={item.id}
+                    style={{ animationDelay: `${index * 80}ms` }}
+                    className="animate-fade-up flex flex-col gap-5 rounded-2xl border border-white/10 bg-zinc-900/50 p-5 transition-all duration-300 hover:border-violet-500/40 hover:shadow-lg hover:shadow-violet-500/10 sm:flex-row"
+                  >
+                    <Link to={`/product/${item.id}`} className="shrink-0">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-36 w-full rounded-xl bg-[#111113] object-cover sm:w-36"
+                      />
                     </Link>
 
-                    <p className="text-gray-400 mt-2">
-                      ₹{item.price.toLocaleString("en-IN")}
-                    </p>
+                    <div className="flex-1">
+                      <p className="text-xs uppercase tracking-wider text-violet-400">
+                        {item.brand}
+                      </p>
 
-                    <div className="flex items-center gap-4 mt-5">
-                      <button
-                        onClick={() => dispatch(decreaseQuantity(item.id))}
-                        disabled={item.quantity <= 1}
-                        className="w-9 h-9 flex items-center justify-center border border-white/20 rounded-lg hover:bg-white hover:text-black transition disabled:opacity-30 disabled:cursor-not-allowed"
-                      >
-                        <Minus size={15} />
-                      </button>
+                      <Link to={`/product/${item.id}`}>
+                        <h2 className="mt-2 text-lg font-semibold transition-colors hover:text-violet-300">
+                          {item.name}
+                        </h2>
+                      </Link>
 
-                      <span className="font-medium w-5 text-center">
-                        {item.quantity}
-                      </span>
+                      <p className="mt-2 text-gray-400">
+                        {item.price > 0
+                          ? `₹${item.price.toLocaleString("en-IN")}`
+                          : "Price unavailable"}
+                      </p>
 
-                      <button
-                        onClick={() => dispatch(increaseQuantity(item.id))}
-                        disabled={item.quantity >= item.stock}
-                        className="w-9 h-9 flex items-center justify-center border border-white/20 rounded-lg hover:bg-white hover:text-black transition disabled:opacity-30 disabled:cursor-not-allowed"
-                      >
-                        <Plus size={15} />
-                      </button>
-                      {item.quantity >= item.stock && (
-                        <span className="text-xs text-amber-400">
-                          Max stock reached
+                      <div className="mt-5 flex items-center gap-4">
+                        <button
+                          onClick={() => dispatch(decreaseQuantity(item.id))}
+                          disabled={item.quantity <= 1}
+                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/20 transition hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-30"
+                        >
+                          <Minus size={15} />
+                        </button>
+
+                        <span className="w-5 text-center font-medium">
+                          {item.quantity}
                         </span>
-                      )}
+
+                        <button
+                          onClick={() => dispatch(increaseQuantity(item.id))}
+                          disabled={!item.inStock || maxStockReached}
+                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/20 transition hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-30"
+                        >
+                          <Plus size={15} />
+                        </button>
+
+                        {maxStockReached && (
+                          <span className="text-xs text-amber-400">
+                            Max stock reached
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between sm:flex-col sm:items-end">
+                      <p className="text-lg font-semibold">
+                        ₹
+                        {((item.price || 0) * item.quantity).toLocaleString(
+                          "en-IN",
+                        )}
+                      </p>
+
+                      <button
+                        onClick={() => dispatch(removeFromCart(item.id))}
+                        className="flex items-center gap-2 text-sm text-red-400 transition hover:text-red-300"
+                      >
+                        <Trash2 size={16} />
+                        Remove
+                      </button>
                     </div>
                   </div>
+                );
+              })}
 
-                  <div className="flex sm:flex-col justify-between items-center sm:items-end">
-                    <p className="font-semibold text-lg">
-                      ₹{(item.price * item.quantity).toLocaleString("en-IN")}
-                    </p>
-
-                    <button
-                      onClick={() => dispatch(removeFromCart(item.id))}
-                      className="flex items-center gap-2 text-red-400 hover:text-red-300 text-sm transition"
-                    >
-                      <Trash2 size={16} />
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
               <button
                 onClick={() => dispatch(clearCart())}
                 className="text-sm text-gray-500 transition hover:text-red-400"
@@ -158,26 +175,27 @@ function Cart() {
               </button>
             </div>
 
-            <div className="h-fit p-6 rounded-2xl border border-white/10 bg-zinc-900/70 backdrop-blur lg:sticky lg:top-28">
-              <h2 className="text-xl font-semibold mb-7">Order Summary</h2>
+            <div className="h-fit rounded-2xl border border-white/10 bg-zinc-900/70 p-6 backdrop-blur lg:sticky lg:top-28">
+              <h2 className="mb-7 text-xl font-semibold">Order Summary</h2>
 
-              <div className="flex justify-between text-gray-400 mb-4">
+              <div className="mb-4 flex justify-between text-gray-400">
                 <span>Total Items</span>
                 <span>{totalItems}</span>
               </div>
 
-              <div className="flex justify-between text-gray-400 mb-4">
+              <div className="mb-4 flex justify-between text-gray-400">
                 <span>Subtotal</span>
                 <span>₹{total.toLocaleString("en-IN")}</span>
               </div>
 
-              <div className="flex justify-between text-gray-400 mb-6">
+              <div className="mb-6 flex justify-between text-gray-400">
                 <span>Shipping</span>
                 <span className="text-green-400">Free</span>
               </div>
 
               <div className="flex items-center justify-between border-t border-white/10 pt-5">
                 <span className="font-medium">Total</span>
+
                 <span className="text-2xl font-bold text-violet-400">
                   ₹{total.toLocaleString("en-IN")}
                 </span>
@@ -185,7 +203,13 @@ function Cart() {
 
               <Link
                 to="/checkout"
-                className="group mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 py-4 font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/40"
+                aria-disabled={!canCheckout}
+                onClick={(event) => {
+                  if (!canCheckout) event.preventDefault();
+                }}
+                className={`group mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 py-4 font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/40 ${
+                  !canCheckout ? "pointer-events-none opacity-40" : ""
+                }`}
               >
                 Proceed to Checkout
                 <ArrowRight
@@ -193,6 +217,12 @@ function Cart() {
                   className="transition-transform duration-300 group-hover:translate-x-1"
                 />
               </Link>
+
+              {!canCheckout && (
+                <p className="mt-3 text-center text-xs text-amber-400">
+                  Remove unavailable or out-of-stock products before checkout.
+                </p>
+              )}
 
               <p className="mt-4 text-center text-xs text-gray-500">
                 Shipping and final charges are subject to checkout.

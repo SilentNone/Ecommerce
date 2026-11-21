@@ -1,8 +1,17 @@
 import { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../redux/slices/authSlice";
 
-import { Search, Heart, ShoppingCart, UserRound, Menu, X } from "lucide-react";
+import {
+  Search,
+  Heart,
+  ShoppingCart,
+  UserRound,
+  Menu,
+  X,
+  LogOut,
+} from "lucide-react";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -19,6 +28,15 @@ function Navbar() {
   const cartCount = items.reduce((total, item) => total + item.quantity, 0);
   const wishlistItems = useSelector((state) => state.wishlist.items);
   const wishlistCount = wishlistItems.length;
+
+  const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
 
   useEffect(() => {
     const onScroll = () => setScroll(window.scrollY > 20);
@@ -99,20 +117,37 @@ function Navbar() {
               )}
             </Link>
 
-            <Link
-              to="/login"
-              aria-label="Account"
-              className="hidden rounded-xl p-3 text-gray-400 transition-colors duration-300 hover:bg-white/10 hover:text-white md:block"
-            >
-              <UserRound size={20} />
-            </Link>
-
-            <Link
-              to="/register"
-              className="ml-3 hidden rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-violet-500/40 md:block"
-            >
-              Sign Up
-            </Link>
+            {user ? (
+              <>
+                <span className="ml-2 hidden items-center gap-2 text-sm text-gray-300 md:flex">
+                  <UserRound size={18} />
+                  {user.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  aria-label="Logout"
+                  className="ml-1 hidden rounded-xl p-3 text-gray-400 transition-colors duration-300 hover:bg-white/10 hover:text-white md:block"
+                >
+                  <LogOut size={20} />
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  aria-label="Login"
+                  className="hidden rounded-xl p-3 text-gray-400 transition-colors duration-300 hover:bg-white/10 hover:text-white md:block"
+                >
+                  <UserRound size={20} />
+                </Link>
+                <Link
+                  to="/register"
+                  className="ml-3 hidden rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-violet-500/40 md:block"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
 
             <button
               onClick={() => setMobile(!mobile)}
@@ -143,6 +178,35 @@ function Navbar() {
                 {link.name}
               </NavLink>
             ))}
+
+            {user ? (
+              <button
+                onClick={() => {
+                  setMobile(false);
+                  handleLogout();
+                }}
+                className="block w-full rounded-lg px-3 py-3 text-left text-gray-400 hover:bg-white/5 hover:text-white"
+              >
+                Logout ({user.name})
+              </button>
+            ) : (
+              <>
+                <NavLink
+                  to="/login"
+                  onClick={() => setMobile(false)}
+                  className="block rounded-lg px-3 py-3 text-gray-400 hover:bg-white/5 hover:text-white"
+                >
+                  Login
+                </NavLink>
+                <NavLink
+                  to="/register"
+                  onClick={() => setMobile(false)}
+                  className="block rounded-lg px-3 py-3 text-gray-400 hover:bg-white/5 hover:text-white"
+                >
+                  Sign Up
+                </NavLink>
+              </>
+            )}
           </div>
         )}
       </nav>

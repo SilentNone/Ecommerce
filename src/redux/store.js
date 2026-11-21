@@ -2,22 +2,23 @@ import { configureStore } from "@reduxjs/toolkit";
 import productReducer from "./slices/productSlice";
 import cartReducer from "./slices/cartSlice";
 import wishlistReducer from "./slices/wishlistSlice";
+import authReducer from "./slices/authSlice";
+import { saveList } from "../utils/storage";
 
 const store = configureStore({
   reducer: {
     products: productReducer,
     cart: cartReducer,
     wishlist: wishlistReducer,
+    auth: authReducer,
   },
 });
 
 store.subscribe(() => {
-  const cartItems = store.getState().cart.items;
-
-  localStorage.setItem("cart", JSON.stringify(cartItems));
-
-  const wishlistItems = store.getState().wishlist.items;
-  localStorage.setItem("wishlist", JSON.stringify(wishlistItems));
+  const { auth, cart, wishlist } = store.getState();
+  const userId = auth.user?.id;
+  saveList("cart", userId, cart.items);
+  saveList("wishlist", userId, wishlist.items);
 });
 
 export default store;
