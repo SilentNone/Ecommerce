@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { getProducts } from "../redux/slices/productSlice";
 import ProductCard from "../components/ProductCard";
 import { categories } from "../constants/categories";
@@ -11,9 +11,16 @@ const PER_PAGE = 8;
 function Shop() {
   const { category: urlCategory } = useParams();
 
+  const [searchParams] = useSearchParams();
+  const urlSearch = searchParams.get("search") || "";
+
+  const [search, setSearch] = useState(urlSearch);
+
+  useEffect(() => {
+    setSearch(urlSearch);
+  }, [urlSearch]);
   const dispatch = useDispatch();
 
-  const [search, setSearch] = useState("");
   const [sort, setSort] = useState("default");
   const [category, setCategory] = useState(urlCategory || "all");
   const [page, setPage] = useState(1);

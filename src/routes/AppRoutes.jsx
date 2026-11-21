@@ -11,6 +11,8 @@ import Register from "../pages/Register";
 import Login from "../pages/Login";
 import Checkout from "../pages/Checkout";
 import Orders from "../pages/Orders";
+import Profile from "../pages/Profile";
+import About from "../pages/About";
 
 function AppRoutes() {
   return (
@@ -25,12 +27,14 @@ function AppRoutes() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/shop/:category" element={<Shop />} />
         <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/about" element={<About />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/cart" element={<Cart />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<Orders />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Route>
     </Routes>

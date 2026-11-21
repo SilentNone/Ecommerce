@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
-import { getOrders } from "../redux/slices/orderSlice";
+import { Link, NavLink } from "react-router-dom";
+import {
+  getOrders,
+  cancelOrder,
+  removeOrder,
+} from "../redux/slices/orderSlice";
 
 function Orders() {
   const dispatch = useDispatch();
@@ -10,11 +14,30 @@ function Orders() {
   useEffect(() => {
     dispatch(getOrders(user.id));
   }, [dispatch, user.id]);
-  const myOrders = orders.filter((order) => order.userId === user.id)
-  .reverse();
+  const myOrders = orders.filter((order) => order.userId === user.id).reverse();
 
   return (
     <div className="mx-auto min-h-screen max-w-4xl px-6 pb-20 pt-28 text-white">
+      <div className="mb-8 flex gap-3">
+        {[
+          ["Profile", "/profile"],
+          ["Orders", "/orders"],
+        ].map(([name, path]) => (
+          <NavLink
+            key={path}
+            to={path}
+            className={({ isActive }) =>
+              `rounded-full px-5 py-2 text-sm ${
+                isActive
+                  ? "bg-white text-black"
+                  : "border border-white/10 text-gray-400"
+              }`
+            }
+          >
+            {name}
+          </NavLink>
+        ))}
+      </div>
       <h1 className="text-3xl font-bold">My Orders</h1>
 
       {loading && <p className="mt-8 text-gray-400">Loading orders...</p>}
@@ -40,7 +63,15 @@ function Orders() {
             <div className="flex flex-wrap justify-between gap-2 text-sm text-gray-400">
               <span>Order {order.id}</span>
               <span>{new Date(order.date).toLocaleDateString("en-IN")}</span>
-              <span className="capitalize text-violet-400">{order.status}</span>
+              <span
+                className={`capitalize ${
+                  order.status === "cancelled"
+                    ? "text-red-400"
+                    : "text-violet-400"
+                }`}
+              >
+                {order.status}
+              </span>
             </div>
 
             {order.items.map((item) => (
@@ -61,6 +92,28 @@ function Orders() {
               <span>Total</span>
               <span>₹{order.total.toLocaleString("en-IN")}</span>
             </div>
+
+            {order.status === "placed" && (
+              <button
+                onClick={() => {
+                  if (window.confirm("Cancel this order?")) {
+                    dispatch(cancelOrder(order.id));
+                  }
+                }}
+                className="mt-4 rounded-lg border border-red-400/40 px-4 py-2 text-sm text-red-400 transition hover:bg-red-500/10"
+              >
+                Cancel Order
+              </button>
+            )}
+
+            {order.status === "cancelled" && (
+              <button
+                onClick={() => dispatch(removeOrder(order.id))}
+                className="mt-4 rounded-lg border border-white/20 px-4 py-2 text-sm text-gray-400 transition hover:bg-white/10"
+              >
+                Remove from history
+              </button>
+            )}
           </div>
         ))}
       </div>

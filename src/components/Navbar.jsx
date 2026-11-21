@@ -16,13 +16,13 @@ import {
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "Shop", path: "/shop" },
-  { name: "Categories", path: "/categories" },
   { name: "About", path: "/about" },
 ];
 
 function Navbar() {
   const [mobile, setMobile] = useState(false);
   const [scroll, setScroll] = useState(false);
+  const [query, setQuery] = useState("");
 
   const items = useSelector((state) => state.cart.items);
   const cartCount = items.reduce((total, item) => total + item.quantity, 0);
@@ -36,6 +36,12 @@ function Navbar() {
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
+  };
+
+  const handleSearch = (e) => {
+    if (e.key !== "Enter" || !query.trim()) return;
+    navigate(`/shop?search=${encodeURIComponent(query.trim())}`);
+    setQuery("");
   };
 
   useEffect(() => {
@@ -84,12 +90,19 @@ function Navbar() {
           </div>
 
           <div className="flex items-center gap-1">
-            <button
-              aria-label="Search"
-              className="rounded-xl p-3 text-gray-400 transition-colors duration-300 hover:bg-white/10 hover:text-white"
-            >
-              <Search size={20} />
-            </button>
+            <div className="relative hidden md:block">
+              <Search
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={handleSearch}
+                placeholder="Search..."
+                className="w-40 rounded-full border border-white/10 bg-white/5 py-2 pl-9 pr-3 text-sm text-white outline-none focus:border-violet-500"
+              />
+            </div>
 
             <Link
               to="/wishlist"
@@ -119,10 +132,13 @@ function Navbar() {
 
             {user ? (
               <>
-                <span className="ml-2 hidden items-center gap-2 text-sm text-gray-300 md:flex">
+                <Link
+                  to="/profile"
+                  className="ml-2 hidden items-center gap-2 text-sm text-gray-300 hover:text-white md:flex"
+                >
                   <UserRound size={18} />
                   {user.name}
-                </span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   aria-label="Logout"
@@ -180,15 +196,24 @@ function Navbar() {
             ))}
 
             {user ? (
-              <button
-                onClick={() => {
-                  setMobile(false);
-                  handleLogout();
-                }}
-                className="block w-full rounded-lg px-3 py-3 text-left text-gray-400 hover:bg-white/5 hover:text-white"
-              >
-                Logout ({user.name})
-              </button>
+              <>
+                <NavLink
+                  to="/profile"
+                  onClick={() => setMobile(false)}
+                  className="block rounded-lg px-3 py-3 text-gray-400 hover:bg-white/5 hover:text-white"
+                >
+                  Profile
+                </NavLink>
+                <button
+                  onClick={() => {
+                    setMobile(false);
+                    handleLogout();
+                  }}
+                  className="block w-full rounded-lg px-3 py-3 text-left text-gray-400 hover:bg-white/5 hover:text-white"
+                >
+                  Logout ({user.name})
+                </button>
+              </>
             ) : (
               <>
                 <NavLink
