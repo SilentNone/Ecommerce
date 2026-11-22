@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import { Heart, ShoppingCart, Star, Minus, Plus } from "lucide-react";
+import toast from "react-hot-toast";
 import { getProducts } from "../redux/slices/productSlice";
 import { addToCart } from "../redux/slices/cartSlice";
 import {
@@ -26,6 +27,11 @@ function ProductDetails() {
 
   const isWishlisted = useSelector((state) =>
     state.wishlist.items.some((item) => String(item.id) === id),
+  );
+
+  const cartQty = useSelector(
+    (state) =>
+      state.cart.items.find((item) => String(item.id) === id)?.quantity || 0,
   );
 
   useEffect(() => {
@@ -69,18 +75,41 @@ function ProductDetails() {
   const outOfStock = !product.inStock;
   const priceUnavailable = !product.price || product.price <= 0;
 
+  const maxQty =
+    typeof product.stockQuantity === "number"
+      ? product.stockQuantity
+      : Infinity;
+
   const handleAddToCart = () => {
     if (outOfStock || priceUnavailable) return;
 
-    requireAuth(() => dispatch(addToCart({ product, quantity })));
+    requireAuth(() => {
+      if (cartQty + quantity > maxQty) {
+        const left = Math.max(0, maxQty - cartQty);
+        toast.error(
+          left === 0
+            ? "You already have the maximum in your cart"
+            : `Only ${left} more available`,
+        );
+        return;
+      }
+      dispatch(addToCart({ product, quantity }));
+      toast.success(
+        quantity === 1 ? "Added to cart" : `Added ${quantity} items to cart`,
+      );
+    });
   };
 
   const handleWishlist = () => {
-    requireAuth(() =>
-      dispatch(
-        isWishlisted ? removefromWishlist(product.id) : addtoWishlist(product),
-      ),
-    );
+    requireAuth(() => {
+      if (isWishlisted) {
+        dispatch(removefromWishlist(product.id));
+        toast.success("Removed from wishlist");
+      } else {
+        dispatch(addtoWishlist(product));
+        toast.success("Added to wishlist");
+      }
+    });
   };
 
   return (
@@ -193,7 +222,11 @@ function ProductDetails() {
               </p>
 
               <p className="mt-2 text-sm text-gray-400">
-                {outOfStock ? "Out of stock" : "In stock"}
+                {outOfStock
+                  ? "Out of stock"
+                  : maxQty <= 5
+                    ? `Only ${maxQty} left`
+                    : "In stock"}
               </p>
             </div>
 
@@ -265,8 +298,10 @@ function ProductDetails() {
                 <span className="w-8 text-center font-medium">{quantity}</span>
 
                 <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  disabled={outOfStock || priceUnavailable}
+                  onClick={() => setQuantity(Math.min(maxQty, quantity + 1))}
+                  disabled={
+                    outOfStock || priceUnavailable || quantity >= maxQty
+                  }
                   className="p-3 hover:text-gray-400 disabled:opacity-40"
                 >
                   <Plus size={16} />

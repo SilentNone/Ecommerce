@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
+import toast from "react-hot-toast";
 import {
   getOrders,
   cancelOrder,
@@ -11,10 +12,31 @@ function Orders() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const { orders, loading } = useSelector((state) => state.orders);
+
   useEffect(() => {
     dispatch(getOrders(user.id));
   }, [dispatch, user.id]);
+
   const myOrders = orders.filter((order) => order.userId === user.id).reverse();
+
+  const handleCancel = async (order) => {
+    if (!window.confirm("Cancel this order?")) return;
+    try {
+      await dispatch(cancelOrder(order.id)).unwrap();
+      toast.success("Order cancelled");
+    } catch {
+      toast.error("Could not cancel the order");
+    }
+  };
+
+  const handleRemove = async (order) => {
+    try {
+      await dispatch(removeOrder(order.id)).unwrap();
+      toast.success("Order removed from history");
+    } catch {
+      toast.error("Could not remove the order");
+    }
+  };
 
   return (
     <div className="mx-auto min-h-screen max-w-4xl px-6 pb-20 pt-28 text-white">
@@ -38,6 +60,7 @@ function Orders() {
           </NavLink>
         ))}
       </div>
+
       <h1 className="text-3xl font-bold">My Orders</h1>
 
       {loading && <p className="mt-8 text-gray-400">Loading orders...</p>}
@@ -95,11 +118,7 @@ function Orders() {
 
             {order.status === "placed" && (
               <button
-                onClick={() => {
-                  if (window.confirm("Cancel this order?")) {
-                    dispatch(cancelOrder(order.id));
-                  }
-                }}
+                onClick={() => handleCancel(order)}
                 className="mt-4 rounded-lg border border-red-400/40 px-4 py-2 text-sm text-red-400 transition hover:bg-red-500/10"
               >
                 Cancel Order
@@ -108,7 +127,7 @@ function Orders() {
 
             {order.status === "cancelled" && (
               <button
-                onClick={() => dispatch(removeOrder(order.id))}
+                onClick={() => handleRemove(order)}
                 className="mt-4 rounded-lg border border-white/20 px-4 py-2 text-sm text-gray-400 transition hover:bg-white/10"
               >
                 Remove from history
@@ -120,4 +139,5 @@ function Orders() {
     </div>
   );
 }
+
 export default Orders;

@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import toast from "react-hot-toast";
 import { updateProfile } from "../redux/slices/authSlice";
 import api from "../services/api";
+import {
+  isValidEmail,
+  isValidPhone,
+  getPasswordError,
+} from "../utils/validators";
 
 const inputClass =
   "w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-violet-500";
@@ -29,9 +35,19 @@ function Profile() {
   const handleSave = async (e) => {
     e.preventDefault();
     setMessage("");
+
+    if (!isValidEmail(form.email)) {
+      setMessage("Enter a valid email, like name@example.com.");
+      return;
+    }
+    if (!isValidPhone(form.phone)) {
+      setMessage("Phone number must be exactly 10 digits.");
+      return;
+    }
+
     try {
       await dispatch(updateProfile({ id: user.id, changes: form })).unwrap();
-      setMessage("Profile updated.");
+      toast.success("Profile updated");
     } catch (error) {
       setMessage(error);
     }
@@ -40,6 +56,13 @@ function Profile() {
   const handlePassword = async (e) => {
     e.preventDefault();
     setPassMessage("");
+
+    const passwordError = getPasswordError(passwords.next);
+    if (passwordError) {
+      setPassMessage(passwordError);
+      return;
+    }
+
     try {
       const res = await api.get(`/users/${user.id}`);
       if (res.data.password !== passwords.current) {
@@ -50,7 +73,7 @@ function Profile() {
         updateProfile({ id: user.id, changes: { password: passwords.next } }),
       ).unwrap();
       setPasswords({ current: "", next: "" });
-      setPassMessage("Password changed.");
+      toast.success("Password changed");
     } catch (error) {
       setPassMessage(error);
     }
@@ -96,7 +119,7 @@ function Profile() {
           name="phone"
           value={form.phone}
           onChange={handleChange}
-          placeholder="Phone"
+          placeholder="Phone (10 digits)"
           className={inputClass}
         />
         <textarea
@@ -108,7 +131,7 @@ function Profile() {
           className={inputClass}
         />
 
-        {message && <p className="text-sm text-violet-400">{message}</p>}
+        {message && <p className="text-sm text-red-400">{message}</p>}
 
         <button
           type="submit"
@@ -135,15 +158,13 @@ function Profile() {
           type="password"
           value={passwords.next}
           onChange={(e) => setPasswords({ ...passwords, next: e.target.value })}
-          placeholder="New password"
+          placeholder="New password (8+, letter and number)"
           required
-          minLength={6}
+          minLength={8}
           className={inputClass}
         />
 
-        {passMessage && (
-          <p className="text-sm text-violet-400">{passMessage}</p>
-        )}
+        {passMessage && <p className="text-sm text-red-400">{passMessage}</p>}
 
         <button
           type="submit"

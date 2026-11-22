@@ -2,6 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 import { getSavedUser, loadList } from "../../utils/storage";
 import { login, register, logout } from "./authSlice";
 
+const getMax = (product) =>
+  typeof product.stockQuantity === "number" ? product.stockQuantity : Infinity;
+
 const cartSlice = createSlice({
   name: "cart",
 
@@ -17,14 +20,15 @@ const cartSlice = createSlice({
 
       if (!product.inStock || !product.price) return;
 
+      const max = getMax(product);
       const existingItem = state.items.find((item) => item.id === product.id);
 
       if (existingItem) {
-        existingItem.quantity += quantity;
+        existingItem.quantity = Math.min(existingItem.quantity + quantity, max);
       } else {
         state.items.push({
           ...product,
-          quantity,
+          quantity: Math.min(quantity, max),
         });
       }
     },
@@ -36,7 +40,7 @@ const cartSlice = createSlice({
     increaseQuantity: (state, action) => {
       const item = state.items.find((item) => item.id === action.payload);
 
-      if (item) {
+      if (item && item.quantity < getMax(item)) {
         item.quantity += 1;
       }
     },
@@ -53,6 +57,7 @@ const cartSlice = createSlice({
       state.items = [];
     },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(login.fulfilled, (state, action) => {
@@ -66,6 +71,7 @@ const cartSlice = createSlice({
       });
   },
 });
+
 export const {
   addToCart,
   removeFromCart,

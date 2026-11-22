@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
+import Logo from "../assets/glide-logo.svg";
+import toast from "react-hot-toast";
 
 import {
   Search,
@@ -36,6 +38,7 @@ function Navbar() {
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
+    toast.success("Logged out");
   };
 
   const handleSearch = (e) => {
@@ -61,13 +64,8 @@ function Navbar() {
         }`}
       >
         <div className="flex items-center justify-between px-6">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 font-bold text-white transition-transform duration-300 group-hover:rotate-12">
-              G
-            </div>
-            <span className="bg-gradient-to-r from-white to-violet-300 bg-clip-text text-xl font-bold tracking-[0.18em] text-transparent">
-              GLIDE
-            </span>
+          <Link to="/" className="flex items-center">
+            <img src={Logo} alt="GLIDE" className="h-9 w-auto" />
           </Link>
 
           <div className="hidden items-center gap-8 md:flex">

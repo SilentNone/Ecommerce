@@ -1,52 +1,70 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { clearCart } from "../redux/slices/cartSlice";
 import { createOrder } from "../redux/slices/orderSlice";
-import { useNavigate } from "react-router-dom";
 
-function CheckOut() {
+function Checkout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const user = useSelector((state) => state.auth.user);
   const items = useSelector((state) => state.cart.items);
 
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(user?.address || "");
   const [placing, setPlacing] = useState(false);
 
   const total = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
-  if (items.length === 0) {
+
+  if (items.length === 0 && !placing) {
     return (
       <div className="min-h-screen pt-32 text-center text-white">
-        Your cart is empty!
+        <p>Your cart is empty.</p>
+        <Link
+          to="/shop"
+          className="mt-4 inline-block text-violet-400 underline"
+        >
+          Continue shopping
+        </Link>
       </div>
     );
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (address.trim().length < 10) {
+      toast.error("Please enter your full shipping address");
+      return;
+    }
+
     setPlacing(true);
+
     try {
       await dispatch(
         createOrder({
           userId: user.id,
           items,
           total,
-          address,
+          address: address.trim(),
           date: new Date().toISOString(),
           status: "placed",
         }),
       ).unwrap();
-      dispatch(clearCart());
+
+      toast.success("Order placed successfully");
       navigate("/orders");
+      dispatch(clearCart());
     } catch {
-      alert("Could not Place the order.Please try again.");
+      toast.error("Could not place the order. Please try again.");
       setPlacing(false);
     }
   };
+
   return (
     <div className="mx-auto min-h-screen max-w-3xl px-6 pb-20 pt-28 text-white">
       <h1 className="text-3xl font-bold">Checkout</h1>
@@ -93,4 +111,5 @@ function CheckOut() {
     </div>
   );
 }
-export default CheckOut;
+
+export default Checkout;

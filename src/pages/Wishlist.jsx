@@ -1,26 +1,48 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { Heart, ArrowLeft, Trash2, ShoppingBag } from "lucide-react";
+import toast from "react-hot-toast";
 import { addToCart } from "../redux/slices/cartSlice";
 import { removefromWishlist } from "../redux/slices/wishlistSlice";
-import { Heart, ArrowLeft, Trash2, ShoppingBag } from "lucide-react";
+import { useRequireAuth } from "../hooks/useRequireAuth";
 
 function Wishlist() {
   const dispatch = useDispatch();
+  const requireAuth = useRequireAuth();
 
   const wishlistItems = useSelector((state) => state.wishlist.items);
+  const cartItems = useSelector((state) => state.cart.items);
 
   const moveToCart = (product) => {
     if (!product.inStock || !product.price || product.price <= 0) {
       return;
     }
 
-    dispatch(addToCart(product));
+    requireAuth(() => {
+      const inCart =
+        cartItems.find((item) => item.id === product.id)?.quantity || 0;
+
+      if (
+        typeof product.stockQuantity === "number" &&
+        inCart >= product.stockQuantity
+      ) {
+        toast.error("You already have the maximum in your cart");
+        return;
+      }
+
+      dispatch(addToCart(product));
+      dispatch(removefromWishlist(product.id));
+      toast.success("Moved to cart");
+    });
+  };
+
+  const handleRemove = (product) => {
     dispatch(removefromWishlist(product.id));
+    toast.success("Removed from wishlist");
   };
 
   return (
     <div className="animate-fade-up mx-auto min-h-screen max-w-7xl px-6 pb-24 pt-28 text-white">
-     
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <p className="text-sm uppercase tracking-[0.2em] text-violet-400">
@@ -47,7 +69,6 @@ function Wishlist() {
         </Link>
       </div>
 
-      {/* Empty Wishlist */}
       {wishlistItems.length === 0 ? (
         <div className="mt-12 flex min-h-[400px] flex-col items-center justify-center rounded-3xl border border-white/10 bg-zinc-900/30 text-center">
           <div className="flex h-24 w-24 items-center justify-center rounded-full border border-white/10 bg-white/5">
@@ -70,7 +91,6 @@ function Wishlist() {
           </Link>
         </div>
       ) : (
-      
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {wishlistItems.map((product, index) => {
             const outOfStock = !product.inStock;
@@ -82,7 +102,6 @@ function Wishlist() {
                 style={{ animationDelay: `${index * 80}ms` }}
                 className="animate-fade-up group overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 transition-all duration-500 hover:-translate-y-2 hover:border-violet-500/50 hover:shadow-2xl hover:shadow-violet-500/20"
               >
-               
                 <div className="relative aspect-square overflow-hidden">
                   <Link to={`/product/${product.id}`}>
                     <img
@@ -99,7 +118,6 @@ function Wishlist() {
                   )}
                 </div>
 
-               
                 <div className="p-4">
                   <p className="text-xs uppercase tracking-wider text-violet-400">
                     {product.brand}
@@ -117,7 +135,6 @@ function Wishlist() {
                       : `₹${product.price.toLocaleString("en-IN")}`}
                   </p>
 
-              
                   <button
                     onClick={() => moveToCart(product)}
                     disabled={outOfStock || priceUnavailable}
@@ -132,9 +149,8 @@ function Wishlist() {
                         : "Move to Cart"}
                   </button>
 
-                 
                   <button
-                    onClick={() => dispatch(removefromWishlist(product.id))}
+                    onClick={() => handleRemove(product)}
                     className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-white/20 transition hover:border-red-400 hover:bg-red-500/10 hover:text-red-400"
                   >
                     <Trash2 size={16} />

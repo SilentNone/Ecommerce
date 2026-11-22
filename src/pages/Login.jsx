@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 import { login, clearAuthError } from "../redux/slices/authSlice";
+import { isValidEmail } from "../utils/validators";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [formError, setFormError] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,16 +27,30 @@ function Login() {
     };
   }, [dispatch]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(login({ email, password }));
+    setFormError("");
+
+    if (!isValidEmail(email)) {
+      setFormError("Enter a valid email, like name@example.com.");
+      return;
+    }
+
+    try {
+      const loggedIn = await dispatch(login({ email, password })).unwrap();
+      toast.success(`Welcome back, ${loggedIn.name}`);
+    } catch {
+      // the error message is shown from Redux
+    }
   };
 
   return (
     <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-8">
       <h1 className="mb-6 text-2xl font-bold text-white">Login</h1>
 
-      {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
+      {(formError || error) && (
+        <p className="mb-4 text-sm text-red-400">{formError || error}</p>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input

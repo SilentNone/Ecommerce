@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ShoppingCart, Eye, Heart } from "lucide-react";
+import toast from "react-hot-toast";
 import { addToCart } from "../redux/slices/cartSlice";
 import {
   addtoWishlist,
@@ -19,6 +20,37 @@ function ProductCard({ product }) {
     state.wishlist.items.some((item) => item.id === product.id),
   );
 
+  const cartQty = useSelector(
+    (state) =>
+      state.cart.items.find((item) => item.id === product.id)?.quantity || 0,
+  );
+
+  const handleWishlist = () => {
+    requireAuth(() => {
+      if (isWishlisted) {
+        dispatch(removefromWishlist(product.id));
+        toast.success("Removed from wishlist");
+      } else {
+        dispatch(addtoWishlist(product));
+        toast.success("Added to wishlist");
+      }
+    });
+  };
+
+  const handleAdd = () => {
+    requireAuth(() => {
+      if (
+        typeof product.stockQuantity === "number" &&
+        cartQty >= product.stockQuantity
+      ) {
+        toast.error(`Only ${product.stockQuantity} available`);
+        return;
+      }
+      dispatch(addToCart(product));
+      toast.success("Added to cart");
+    });
+  };
+
   return (
     <div className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition-all duration-500 hover:-translate-y-2 hover:border-white/30 hover:shadow-2xl">
       <div className="relative aspect-square overflow-hidden bg-white/5">
@@ -29,15 +61,7 @@ function ProductCard({ product }) {
         />
 
         <button
-          onClick={() =>
-            requireAuth(() =>
-              dispatch(
-                isWishlisted
-                  ? removefromWishlist(product.id)
-                  : addtoWishlist(product),
-              ),
-            )
-          }
+          onClick={handleWishlist}
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/60 backdrop-blur-md transition-transform hover:scale-110"
         >
@@ -55,7 +79,7 @@ function ProductCard({ product }) {
 
         <div className="absolute inset-x-0 bottom-0 flex translate-y-full gap-2 p-3 transition-transform duration-300 group-hover:translate-y-0">
           <button
-            onClick={() => requireAuth(() => dispatch(addToCart(product)))}
+            onClick={handleAdd}
             disabled={outOfStock || priceUnavailable}
             className="flex flex-1 items-center justify-center gap-2 rounded-full bg-white py-2.5 text-sm font-semibold text-black transition-colors hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
           >

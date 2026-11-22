@@ -8,6 +8,7 @@ import {
   Minus,
   Plus,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 import {
   removeFromCart,
@@ -29,6 +30,17 @@ function Cart() {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const canCheckout = items.every((item) => item.inStock && item.price > 0);
+
+  const handleRemove = (item) => {
+    dispatch(removeFromCart(item.id));
+    toast.success("Removed from cart");
+  };
+
+  const handleClear = () => {
+    if (!window.confirm("Remove all items from your cart?")) return;
+    dispatch(clearCart());
+    toast.success("Cart cleared");
+  };
 
   return (
     <div className="animate-fade-up min-h-screen bg-[#09090B] px-6 pb-20 pt-28 text-white">
@@ -156,7 +168,7 @@ function Cart() {
                       </p>
 
                       <button
-                        onClick={() => dispatch(removeFromCart(item.id))}
+                        onClick={() => handleRemove(item)}
                         className="flex items-center gap-2 text-sm text-red-400 transition hover:text-red-300"
                       >
                         <Trash2 size={16} />
@@ -168,7 +180,7 @@ function Cart() {
               })}
 
               <button
-                onClick={() => dispatch(clearCart())}
+                onClick={handleClear}
                 className="text-sm text-gray-500 transition hover:text-red-400"
               >
                 Clear cart
