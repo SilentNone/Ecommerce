@@ -38,7 +38,7 @@ function Home() {
 
         <div className="relative z-10 mx-auto w-full max-w-7xl px-6 py-24">
           <p className="animate-pulse font-mono text-xs uppercase tracking-[0.25em] text-violet-400 md:text-sm">
-            KEYBOARDS · MOUSE · WORKSPACE ESSENTIALS
+            KEYBOARDS · MICE · ACCESSORIES
           </p>
 
           <h1 className="mt-8 max-w-3xl text-5xl font-bold leading-[1.05] md:text-7xl">

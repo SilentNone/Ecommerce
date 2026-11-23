@@ -69,7 +69,7 @@ function Register() {
       toast.success("Account created. Welcome to GLIDE!");
       navigate("/");
     } catch {
-      // the error message is shown from Redux
+      
     }
   };
 

@@ -117,7 +117,6 @@ function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-gray-500 sm:flex-row">
           <p>© {new Date().getFullYear()} GLIDE. All rights reserved.</p>
-          <p>Free shipping on every order</p>
         </div>
       </div>
     </footer>

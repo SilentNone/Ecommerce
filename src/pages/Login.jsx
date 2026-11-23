@@ -40,7 +40,6 @@ function Login() {
       const loggedIn = await dispatch(login({ email, password })).unwrap();
       toast.success(`Welcome back, ${loggedIn.name}`);
     } catch {
-      // the error message is shown from Redux
     }
   };
 
