@@ -1266,9 +1266,65 @@
       "phone": "7306992141",
       "id": "9lVCb7Vg5jM",
       "address": "Poolamangalam ,Vettichira"
+    },
+    {
+      "name": "vishnu",
+      "email": "vishnu@gmail.com",
+      "password": "123456789o",
+      "phone": "7592847957",
+      "id": "9_ku8DiMb04"
+    },
+    {
+      "name": "ajmal",
+      "email": "ajmal@gmail.com",
+      "password": "A1234567",
+      "phone": "7456123450",
+      "id": "gcBaS0Cx7vg"
+    },
+    {
+      "name": "Adil",
+      "email": "adil@gmail.com",
+      "password": "Hpk989560",
+      "phone": "9896231456",
+      "id": "Z82jT4VR4R4"
     }
   ],
-  "orders": [],
+  "orders": [
+    {
+      "userId": "9_ku8DiMb04",
+      "items": [
+        {
+          "id": "1",
+          "name": "Keychron K2 Wireless Mechanical Keyboard (Version 2)",
+          "brand": "Keychron",
+          "sku": "K2-A1",
+          "category": "keyboards",
+          "subCategory": "wireless",
+          "price": 8999,
+          "originalPrice": 25799,
+          "discount": 65,
+          "rating": 5,
+          "reviews": 948,
+          "inStock": true,
+          "stockQuantity": 6,
+          "image": "/images/keychron-k2.jpg",
+          "images": [],
+          "description": "Wireless mechanical keyboard with white backlight.",
+          "switches": [
+            "Gateron G Pro Red",
+            "Gateron G Pro Brown"
+          ],
+          "colors": [],
+          "quantity": 1
+        }
+      ],
+      "total": 8999,
+      "address": "kakkencherry,po",
+      "date": "2026-11-23T04:07:50.620Z",
+      "status": "placed",
+      "id": "n8x3ttgwFak"
+    }
+  ],
   "wishlists": [],
   "carts": [],
   "$schema": "./node_modules/json-server/schema.json"

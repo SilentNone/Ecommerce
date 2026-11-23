@@ -13,7 +13,7 @@ export const registerUser = async (userData) => {
 
   const newUser = {
     name: userData.name,
-    email,
+    email: userData.email,
     password: userData.password,
     phone: userData.phone || "",
   };
@@ -33,9 +33,14 @@ export const loginUser = async (email, password) => {
   });
 
   const user = response.data[0];
+  console.log(response);
 
-  if (!user || user.password !== password) {
-    throw new Error("Invalid email or password");
+  if (!user) {
+    throw new Error("Invalid email");
+  }
+
+  if (user.password !== password) {
+    throw new Error("Invalid  password");
   }
 
   const { password: userPassword, ...safeUser } = user;
