@@ -13,7 +13,7 @@ export const registerUser = async (userData) => {
 
   const newUser = {
     name: userData.name,
-    email: userData.email,
+    email,
     password: userData.password,
     phone: userData.phone || "",
   };
@@ -33,7 +33,6 @@ export const loginUser = async (email, password) => {
   });
 
   const user = response.data[0];
-  console.log(response);
 
   if (!user) {
     throw new Error("Invalid email");
@@ -41,6 +40,10 @@ export const loginUser = async (email, password) => {
 
   if (user.password !== password) {
     throw new Error("Invalid  password");
+  }
+  
+  if (user.role === "admin") {
+    throw new Error("This is an admin account. Please use the admin login.");
   }
 
   const { password: userPassword, ...safeUser } = user;

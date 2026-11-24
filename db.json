@@ -1231,35 +1231,6 @@
   ],
   "users": [
     {
-      "name": "arshad",
-      "email": "arshad@gmail.com",
-      "password": "123456",
-      "phone": "123456789",
-      "id": "dY43TGK9OiY"
-    },
-    {
-      "name": "arshu",
-      "email": "arshu@gmail.com",
-      "password": "123456",
-      "phone": "1234567890",
-      "id": "Giyi-ubICqg"
-    },
-    {
-      "name": "abrah",
-      "email": "ab@gmail.com",
-      "password": "123456",
-      "phone": "7306992141",
-      "id": "kB9zecGkQVg"
-    },
-    {
-      "name": "jasim",
-      "email": "jasim@gmail.com",
-      "password": "123456",
-      "phone": "1234567890",
-      "id": "jGNwP_hPULM",
-      "address": ""
-    },
-    {
       "name": "Arshad",
       "email": "arshadpk@gmail.com",
       "password": "Apk123456",
@@ -1287,6 +1258,14 @@
       "password": "Hpk989560",
       "phone": "9896231456",
       "id": "Z82jT4VR4R4"
+    },
+    {
+      "name":"Admin",
+      "email" :"admin@gmail.com",
+      "password":"admin@123",
+      "phone":"9744261969",
+      "role":"admin",
+      "id":"adminmain"
     }
   ],
   "orders": [
