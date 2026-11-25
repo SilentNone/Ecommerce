@@ -14,6 +14,8 @@ import Orders from "../pages/Orders";
 import Profile from "../pages/Profile";
 import About from "../pages/About";
 import AdminLogin from "../admin/pages/AdminLogin";
+import AdminLayout from "../admin/layouts/AdminLayout";
+import AdminRoute from "./AdminRoute";
 
 function AppRoutes() {
   return (
@@ -37,6 +39,9 @@ function AppRoutes() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
+        </Route>
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<AdminLayout />} />
         </Route>
       </Route>
     </Routes>
