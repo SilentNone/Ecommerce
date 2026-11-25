@@ -13,6 +13,7 @@ import Checkout from "../pages/Checkout";
 import Orders from "../pages/Orders";
 import Profile from "../pages/Profile";
 import About from "../pages/About";
+import AdminLogin from "../admin/pages/AdminLogin";
 
 function AppRoutes() {
   return (
@@ -20,6 +21,7 @@ function AppRoutes() {
       <Route element={<AuthLayout />}>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
       </Route>
 
       <Route element={<UserLayout />}>
