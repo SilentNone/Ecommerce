@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import UserLayout from "../layouts/UserLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import ProtectedRoute from "./ProtectedRoute";
@@ -15,7 +15,11 @@ import Profile from "../pages/Profile";
 import About from "../pages/About";
 import AdminLogin from "../admin/pages/AdminLogin";
 import AdminLayout from "../admin/layouts/AdminLayout";
+import AdminProducts from "../admin/pages/AdminProducts";
+import AdminUsers from "../admin/pages/AdminUsers";
+import AdminOrders from "../admin/pages/AdminOrders";
 import AdminRoute from "./AdminRoute";
+import Dashboard from "../admin/pages/Dashboard";
 
 function AppRoutes() {
   return (
@@ -40,8 +44,15 @@ function AppRoutes() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
-        <Route element={<AdminRoute />}>
-          <Route path="/admin" element={<AdminLayout />} />
+      </Route>
+
+      <Route element={<AdminRoute />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="orders" element={<AdminOrders />} />
         </Route>
       </Route>
     </Routes>

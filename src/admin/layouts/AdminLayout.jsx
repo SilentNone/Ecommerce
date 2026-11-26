@@ -30,44 +30,60 @@ function AdminLayout() {
   function handleLogout() {
     dispatch(adminLogout());
     navigate("/admin/login");
-    toast.success("Logged Out SuccessFully.");
+    toast.success("Logged out");
   }
 
   return (
-    <div className="flex gap-2 min-h-screen">
-      <aside className="w-60 border bg-gray-900 text-white p-4 flex flex-col gap-2">
+    <div className="flex min-h-screen bg-[#09090B] text-white">
+      <aside className="sticky top-0 flex h-screen w-16 shrink-0 flex-col gap-2 border-r border-white/10 bg-white/5 p-3 md:w-60 md:p-4">
+        <div className="mb-4 hidden px-3 md:block">
+          <p className="text-xs uppercase tracking-[0.2em] text-violet-400">
+            GLIDE
+          </p>
+          <p className="text-lg font-bold">Admin</p>
+        </div>
+
         {links.map((link) => {
           const Icon = link.icon;
           return (
-            <div key={link.name}>
-              <NavLink
-                to={link.path}
-                className={({ isActive }) =>
+            <NavLink
+              key={link.name}
+              to={link.path}
+              className={({ isActive }) =>
+                `flex items-center justify-center gap-3 rounded-lg p-3 transition-colors md:justify-start ${
                   isActive
-                    ? "flex items-center gap-3 p-3 rounded-lg bg-purple-600 text-white"
-                    : "flex items-center gap-3 p-3 rounded-lg hover:text-gray-400 hover:bg-gray-800"
-                }
-              >
-                <Icon size={20} />
-                <h3>{link.name}</h3>
-              </NavLink>
-            </div>
+                    ? "bg-violet-600 text-white"
+                    : "text-gray-400 hover:bg-white/10 hover:text-white"
+                }`
+              }
+            >
+              <Icon size={20} />
+              <span className="hidden md:inline">{link.name}</span>
+            </NavLink>
           );
         })}
       </aside>
-      <main className="flex-1 bg-gray-50">
-        <header className="flex justify-between items-center p-5 bg-white border-b">
-          <h2 className="font-bold text-purple-400">Welcome ,{admin?.name}</h2>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center justify-between border-b border-white/10 bg-white/5 px-6 py-4">
+          <h2 className="font-semibold text-violet-300">
+            Welcome, {admin?.name}
+          </h2>
           <button
             onClick={handleLogout}
-            className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+            aria-label="Logout"
+            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
           >
             <LogOut size={20} />
           </button>
         </header>
-        <Outlet />
-      </main>
+
+        <main className="flex-1 p-6">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
+
 export default AdminLayout;
