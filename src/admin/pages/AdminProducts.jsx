@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 import { getProducts, removeProduct } from "../../redux/slices/productSlice";
+import ProductForm from "../components/ProductForm";
 
 const PER_PAGE = 10;
 
@@ -11,6 +12,8 @@ function AdminProducts() {
   const { products, loading, error } = useSelector((state) => state.products);
 
   const [page, setPage] = useState(1);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
 
   useEffect(() => {
     if (products.length === 0) {
@@ -22,6 +25,16 @@ function AdminProducts() {
   const currentPage = Math.min(page, totalPages);
   const start = (currentPage - 1) * PER_PAGE;
   const visibleProducts = products.slice(start, start + PER_PAGE);
+
+  const openAdd = () => {
+    setEditing(null);
+    setFormOpen(true);
+  };
+
+  const openEdit = (product) => {
+    setEditing(product);
+    setFormOpen(true);
+  };
 
   const handleDelete = async (product) => {
     if (!window.confirm(`Delete "${product.name}"?`)) return;
@@ -37,8 +50,18 @@ function AdminProducts() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Products</h1>
-        <p className="text-sm text-gray-400">{products.length} products</p>
+        <div>
+          <h1 className="text-2xl font-bold">Products</h1>
+          <p className="text-sm text-gray-400">{products.length} products</p>
+        </div>
+
+        <button
+          onClick={openAdd}
+          className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-2.5 text-sm font-semibold"
+        >
+          <Plus size={16} />
+          Add Product
+        </button>
       </div>
 
       {loading && <p className="mt-8 text-gray-400">Loading products...</p>}
@@ -106,6 +129,13 @@ function AdminProducts() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <button
+                          onClick={() => openEdit(product)}
+                          aria-label="Edit product"
+                          className="rounded-lg p-2 text-gray-300 transition-colors hover:bg-white/10"
+                        >
+                          <Pencil size={18} />
+                        </button>
+                        <button
                           onClick={() => handleDelete(product)}
                           aria-label="Delete product"
                           className="rounded-lg p-2 text-red-400 transition-colors hover:bg-red-500/10"
@@ -144,6 +174,10 @@ function AdminProducts() {
             </div>
           )}
         </>
+      )}
+
+      {formOpen && (
+        <ProductForm product={editing} onClose={() => setFormOpen(false)} />
       )}
     </div>
   );

@@ -6,6 +6,7 @@ import authReducer from "./slices/authSlice";
 import orderReducer from "./slices/orderSlice";
 import adminReducer from "../admin/redux/slices/adminSlice";
 import userReducer from "../admin/redux/slices/adminUserSlice";
+import adminOrderReducer from "../admin/redux/slices/adminOrderSlice";
 import { saveList } from "../utils/storage";
 
 const store = configureStore({
@@ -17,6 +18,7 @@ const store = configureStore({
     orders: orderReducer,
     admin: adminReducer,
     users: userReducer,
+    adminOrders: adminOrderReducer,
   },
 });
 
