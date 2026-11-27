@@ -1236,7 +1236,8 @@
       "password": "Apk123456",
       "phone": "7306992141",
       "id": "9lVCb7Vg5jM",
-      "address": "Poolamangalam ,Vettichira"
+      "address": "Poolamangalam ,Vettichira",
+      "blocked": false
     },
     {
       "name": "vishnu",
@@ -1260,12 +1261,12 @@
       "id": "Z82jT4VR4R4"
     },
     {
-      "name":"Admin",
-      "email" :"admin@gmail.com",
-      "password":"admin@123",
-      "phone":"9744261969",
-      "role":"admin",
-      "id":"adminmain"
+      "name": "Admin",
+      "email": "admin@gmail.com",
+      "password": "admin@123",
+      "phone": "9744261969",
+      "role": "admin",
+      "id": "adminmain"
     }
   ],
   "orders": [

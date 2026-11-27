@@ -1,10 +1,12 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import BlockedWatcher from "../components/BlockedWatcher";
 
 function UserLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-[#09090B]">
+      <BlockedWatcher />
       <Navbar />
       <main className="flex-1">
         <Outlet />

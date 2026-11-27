@@ -39,9 +39,12 @@ export const loginUser = async (email, password) => {
   }
 
   if (user.password !== password) {
-    throw new Error("Invalid  password");
+    throw new Error("Invalid password");
   }
-  
+  if (user.blocked) {
+    throw new Error("Your account has been suspended");
+  }
+
   if (user.role === "admin") {
     throw new Error("This is an admin account. Please use the admin login.");
   }
@@ -63,4 +66,12 @@ export const updateUser = async (id, changes) => {
   const response = await api.patch(`/users/${id}`, changes);
   const { password, ...safeUser } = response.data;
   return safeUser;
+};
+export const checkUserBlocked = async (id) => {
+  try {
+    const response = await api.get(`/users/${id}`);
+    return Boolean(response.data.blocked);
+  } catch (error) {
+    return error.response?.status === 404;
+  }
 };
