@@ -2,16 +2,29 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { adminLogout } from "../redux/slices/adminSlice";
 import toast from "react-hot-toast";
-import { LogOut, Package, Users, ClipboardList } from "lucide-react";
+import Logo from "../../assets/glide-logo.svg";
+
+import {
+  LogOut,
+  Package,
+  Users,
+  ClipboardList,
+  LayoutDashboard,
+} from "lucide-react";
 
 const links = [
+  {
+    name: "Dashboard",
+    path: "/admin",
+    icon: LayoutDashboard,
+  },
   {
     name: "Products",
     path: "/admin/products",
     icon: Package,
   },
   {
-    name: "Users",
+    name: "Customers",
     path: "/admin/users",
     icon: Users,
   },
@@ -37,9 +50,7 @@ function AdminLayout() {
     <div className="flex min-h-screen bg-[#09090B] text-white">
       <aside className="sticky top-0 flex h-screen w-16 shrink-0 flex-col gap-2 border-r border-white/10 bg-white/5 p-3 md:w-60 md:p-4">
         <div className="mb-4 hidden px-3 md:block">
-          <p className="text-xs uppercase tracking-[0.2em] text-violet-400">
-            GLIDE
-          </p>
+          <img src={Logo} alt="GLIDE" className="h-9 w-auto" />
           <p className="text-lg font-bold">Admin</p>
         </div>
 
@@ -49,6 +60,7 @@ function AdminLayout() {
             <NavLink
               key={link.name}
               to={link.path}
+              end
               className={({ isActive }) =>
                 `flex items-center justify-center gap-3 rounded-lg p-3 transition-colors md:justify-start ${
                   isActive

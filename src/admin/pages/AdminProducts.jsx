@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { getProducts, removeProduct } from "../../redux/slices/productSlice";
 import ProductForm from "../components/ProductForm";
 
-const PER_PAGE = 10;
+const PER_PAGE = 6;
 
 function AdminProducts() {
   const dispatch = useDispatch();
