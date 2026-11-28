@@ -42,7 +42,7 @@ export const loginUser = async (email, password) => {
     throw new Error("Invalid password");
   }
   if (user.blocked) {
-    throw new Error("Your account has been suspended");
+    throw new Error("Your account has been blocked");
   }
 
   if (user.role === "admin") {
